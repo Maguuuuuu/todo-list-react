@@ -1,0 +1,22 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    --cinza: #ebebce;
+    --preto: #272727;
+    --rosa: #f86198;
+    --verde: #36B59F;
+}
+
+body{
+    background: var(--cinza);
+    height: 100vh;
+}
+
+.button, .body, .input, .textarea, body{
+    font-size: 1rm;
+    font-family: sans-serif;
+}
