@@ -5,3 +5,4 @@ export * from './conteudo';
 export * from './Footer';
 export * from './FormCriarTarefa';
 export * from './ListaTarefas';
+export * from './Loading';

@@ -7,9 +7,10 @@ import { CampoTexto } from "../CampoTexto";
 import style from './FormCriarTarefa.module.css';
 
 import { useAppContext } from "../../hooks";
+import { Loading } from "../Loading";
 
 const FormCriarTarefa = () => {
-const { adicionarTarefa, excluirTarefaEditada, criarTarefaEditada } = useAppContext();
+const { adicionarTarefa, loadingCriar } = useAppContext();
 
     const [nomeTarefa, setNomeTarefa] = useState ('');  // o estado é deixar o valor do imput em branco 
 
@@ -37,7 +38,7 @@ const { adicionarTarefa, excluirTarefaEditada, criarTarefaEditada } = useAppCont
                 value={nomeTarefa} 
                 onChange={onChangeNomeTarefa}
             />
-            <Botao texto="+"/>
+            <Botao texto={loadingCriar ? <Loading/> : '+'}/>
  
         </form>
         

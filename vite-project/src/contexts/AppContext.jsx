@@ -2,7 +2,9 @@
 
 
 
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
+
+import { api } from '../services/api'
 
 
 export const AppContext = createContext({});
@@ -12,57 +14,99 @@ export const  AppContextProvider = (props) => {
 
     const [criador, setCriador] = useState('Bistafa');
 
-    const [tarefas, setTarefas] = useState([     //primeiro valor: estado de tarefas, segundo: função para atualizar a lista de tarefas; como padrao no segundo valor usar 'set' + nome do estado;para saber que esta função altera aquele estado 
-            { id: 1, nome: 'Item 1'},  
-            { id: 2, nome: 'Item 2'},
-            { id: 3, nome: 'Item 3'},
+    const [tarefas, setTarefas] = useState([]);
+
+    const [loadingCriar, setLoadingCriar] = useState(false);
+    const [loadingEditar, setLoadingEditar] = useState(false);
+    const [loadingDeletar, setLoadingDeletar] = useState(null);
+    const [loadingCarregar, setLoadingCarregar] = useState(null);
+
+    const carregarTarefas = async () => {
+
+        setLoadingCarregar(true);
+
+        const { data = [] } = await api.get('/tarefas')
+        setTarefas([
+            ...data,
         ]);
 
-    const adicionarTarefa = (nomeTarefa) => {
+        setLoadingCarregar(false);
+    };
+
+    const adicionarTarefa = async (nomeTarefa) => {
+
+        setLoadingCriar(true);
+
+        const { data : tarefa } = await api.post('/tarefas', {
+            nome: nomeTarefa,
+        });
+
         setTarefas(estadoAtual => {
-            const tarefa = {
-                id: estadoAtual.length + 1,
-                nome: nomeTarefa,
-            };
-            
             return [
                 ...estadoAtual,
                 tarefa,
             ];
         
         });
-        }
 
-    const removerTarefa = (idTarefa) => {
+        setLoadingCriar(false);
+    }
+
+    const removerTarefa = async (idTarefa) => {
+
+        setLoadingDeletar(idTarefa);
+
+        await api.delete(`tarefas/${idTarefa}`);
+
         setTarefas(estadoAtual => {
             const tarefasAtualizadas = estadoAtual.filter(tarefa => tarefa.id != idTarefa);
 
             return[
                 ...tarefasAtualizadas,
             ];
-
-        });
-
-            
+        });     
+        setLoadingDeletar(null);    
     };
 
-    const excluirTarefaEditada = (idTarefa) => {
-        setTarefas (estadoAtual => {
-            const tarefasEditadasExcluidas = estadoAtual.filter(tarefa => tarefa.id != idTarefa);
-            
-            return[
-                ...tarefasEditadasExcluidas,
-            ]
+    const editarTarefa = async (idTarefa, nomeTarefa) => {
+
+        setLoadingEditar(idTarefa);
+
+        const {data: tarefatarefaAtualizada} = await api.put(`tarefas/${idTarefa}`,{
+            nome: nomeTarefa,
         });
+
+        setTarefas(estadoAtual =>{
+            const tarefasAtualizadas = estadoAtual.map(tarefa => {
+                return tarefa.id == idTarefa ? {
+                    ...tarefa,
+                    nome: tarefatarefaAtualizada.nome,
+                } : tarefa;
+            });
+
+            return [
+                ...tarefasAtualizadas,
+            ];
+        });
+
+        setLoadingEditar(null);
     };
 
+    useEffect(() =>{     //primeiro valor que o useEffect rece é a função que será executada e o segundo é um array de dependencias que ele vai observar
+        carregarTarefas();
+    },[])
+    
     return (
         <AppContext.Provider value={{
             criador,
             tarefas,
             adicionarTarefa,
             removerTarefa,
-            excluirTarefaEditada,
+            editarTarefa,
+            loadingCarregar,
+            loadingCriar,
+            loadingDeletar,
+            loadingEditar,
             }}>
             { children }
         </AppContext.Provider>
