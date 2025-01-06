@@ -1,4 +1,4 @@
-//o context deve gerenciar os estados (?) nesse caso as funções de adicionar e remor tarefas
+
 
 
 
@@ -92,7 +92,7 @@ export const  AppContextProvider = (props) => {
         setLoadingEditar(null);
     };
 
-    useEffect(() =>{     //primeiro valor que o useEffect rece é a função que será executada e o segundo é um array de dependencias que ele vai observar
+    useEffect(() =>{     
         carregarTarefas();
     },[])
     
